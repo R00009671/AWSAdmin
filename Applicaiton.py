@@ -10,9 +10,9 @@ selectRegion =  "eu-west-1"
 response = raw_input('''Please select What feature you would like to view:
   \n 1 for amazon EC 2 instances
   \n 2 for S3 Bucket listings
-  \n 3 Enable cloud watch for ''')
+  \n 3 Enable cloud watch for All instances ''')
 
-
+#Using a Switch from UtilityClasses to create the menu system
 for case in UtilityClasses.switch(response):
     if case('1'):
 
@@ -28,26 +28,26 @@ for case in UtilityClasses.switch(response):
         for i in instances:
             print ("Instance ID:",i ,
                     "Instance Type:", i.instance_type,
-                    "Instance Region: ", i.placement)
-
-
-
+                    "Instance Region: ", i.placement,
+                    "Instance Launch Time: ", i.launch_time)
 
         break
     if case('2'):
         print("You selected S3 buckets")
-
-        print("Current S3 Buckets")
-
-
-        conn = boto.connect_s3()
-        buckets = conn.get_all_buckets()
+        print("Current S3 Buckets:")
+        s3conn = boto.connect_s3()
+        buckets = s3conn.get_all_buckets()
 
         if not buckets:
             print("No buckets exists")
+            UtilityClasses.CreateBucket(s3conn)
+
         else:
             for bucket in buckets:
                 print bucket
+        UtilityClasses.CreateBucket(s3conn)
+    if case('3'):
+        print("Enable CloudWatch on all instances")
 
 
 #Conenct to EC2 and display current instances of EC 2
