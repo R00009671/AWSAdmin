@@ -15,7 +15,6 @@ response = raw_input('''Please select What feature you would like to view:
 #Using a Switch from UtilityClasses to create the menu system
 for case in UtilityClasses.switch(response):
     if case('1'):
-
         print("Running AWS EC2 Instances")
         conn = boto.ec2.connect_to_region(selectRegion)
 
@@ -64,7 +63,9 @@ for case in UtilityClasses.switch(response):
 
 
 
-
+#TODO Need to add CloudWatch Alarm for 40% utilization + subscripe to the alarm via snd
+#TODO need to add functionality to create an Ec2 instance with choice of os
+#TODO Need to Create functionality for other feature + give example
 
 #TODO change this to read form an aws keyfile specefied by the user and pull in the infroamtion from there
 
