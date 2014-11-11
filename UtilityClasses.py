@@ -41,11 +41,7 @@ def MainMenu():
         conn = boto.ec2.connect_to_region(selectRegion)
 
         #Build an array called Instances and append each instance this via the extend method
-        instances = []
-        reservations = conn.get_all_reservations()
-        for reservation in reservations:
-            instances.extend(reservation.instances)
-         #Print out the information for each instance
+        instances = getInstances(selectRegion)
         for i in instances:
             print ("Instance ID:",i ,
                     "Instance Type:", i.instance_type,
@@ -130,10 +126,10 @@ def cloudwatch(selectRegion):
     listOfInstances = getInstances(selectRegion)
 
     for instance in listOfInstances:
-
+        print "Enabled Monitoring of (%s)" % instance.id
         conn.monitor_instance(instance.id)
 
-
+    backToMenu()
 
 
 
@@ -148,4 +144,9 @@ def getInstances(selectRegion):
         instances.extend(reservation.instances)
 
     return  instances
+
+def create_alarm():
+    ec2 = boto.connect.ec2
+    sns = boto.connect.sns
+    cw = boto.connect_cloudwatch()
 
