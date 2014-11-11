@@ -45,29 +45,24 @@ def MainMenu():
         reservations = conn.get_all_reservations()
         for reservation in reservations:
             instances.extend(reservation.instances)
-#Print out the information for each instance
+         #Print out the information for each instance
         for i in instances:
             print ("Instance ID:",i ,
                     "Instance Type:", i.instance_type,
                     "Instance Region: ", i.placement,
                     "Instance Launch Time: ", i.launch_time)
+        launchInstance(conn)
+        backToMenu()
 
 
-
-
-    backToMenu()
-
-    break
-
-
-    if case('2'):
+    elif case('2'):
         print("You selected S3 buckets")
         print("Current S3 Buckets:")
         s3conn = boto.connect_s3()
         buckets = s3conn.get_all_buckets()
 
         if not buckets:
-            print("No buckets exists")
+            print("No buckets exists you need to create a bucket")
             CreateBucket(s3conn)
 
         else:
@@ -75,9 +70,10 @@ def MainMenu():
                 print bucket
         CreateBucket(s3conn)
         backToMenu()
-    if case('3'):
-        print("Enable CloudWatch on all instances")
 
+    elif case('3'):
+        print("Enable CloudWatch on all instances")
+        cloudwatch(selectRegion)
 
 
 
@@ -86,6 +82,9 @@ def CreateBucket(s3conn):
     create = raw_input("Would you like to create a bucket?")
     if create == "y":
         bucketName = raw_input("Please enter Name of bucket")
+
+        if bucket is None:
+            return
 
         bucket = s3conn.lookup(bucketName)
         if bucket:
@@ -108,6 +107,14 @@ def ShutdownInstance(conn):
 
         conn.stop_instances(instance)
 
+def launchInstance(conn):
+
+    launchins = raw_input("Do you wish to launch an instance")
+    if launchins.lower() == "y" or "yes":
+        instanceID = raw_input("Please enter Instance ID to Launch")
+        conn.run_instances("i-dbeffb99")
+    else:
+        exit()
 
 def backToMenu():
 
@@ -116,6 +123,29 @@ def backToMenu():
     if goBack.lower() == "yes" or "y":
      MainMenu()
 
+def cloudwatch(selectRegion):
+    conn  = boto.ec2.connect_to_region(selectRegion)
+    print "Enabling ClouwWatch Monitoring On all instances"
+
+    listOfInstances = getInstances(selectRegion)
+
+    for instance in listOfInstances:
+
+        conn.monitor_instance(instance.id)
 
 
+
+
+
+def getInstances(selectRegion):
+
+    conn = boto.ec2.connect_to_region(selectRegion)
+
+    #Build an array called Instances and append each instance this via the extend method
+    instances = []
+    reservations = conn.get_all_reservations()
+    for reservation in reservations:
+        instances.extend(reservation.instances)
+
+    return  instances
 
